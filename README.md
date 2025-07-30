@@ -68,12 +68,12 @@ Chimera3X_Orchestra/
 ├── Marwantoolkit/
 │   ├── X1.py
 │   ├── X2.py
-
 │   └── X3.py
 ├── Chimera_3X_Benchmark.py
 ├── figs/
 ├── git_info/
 └── requirements.txt
+
 Dependencies (requirements.txt)
 # Core Deep Learning
 torch>=2.0.0
