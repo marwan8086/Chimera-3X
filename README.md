@@ -20,6 +20,10 @@ Chimera-3X is a comprehensive medical AI system that combines multiple specializ
 - Research Integration and Code Generation
 - Safety Protocols and Validation
 - Comprehensive Benchmarking System
+
+  <img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
+
+  
 ## Quick Start
 ### Installation
 pip install -r requirements.txt
@@ -38,7 +42,10 @@ print(response)
 ## Performance Metrics
 
 
-<img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
+<img width="370" height="254" alt="chimera3x_performance_vs_target_radar" src="https://github.com/user-attachments/assets/4708df72-fb9b-4ea2-ac77-17d8ac31aca7" />
+<img width="285" height="214" alt="chimera3x_benchmark_scores_comparison" src="https://github.com/user-attachments/assets/c3bac357-0757-49fd-81e4-1eeb07bf4bd6" />
+
+
 
 
 - EM Score : 0.8404
@@ -52,6 +59,10 @@ print(response)
 - OpenAI API key
 - CUDA (recommended)
 ## Project Structure
+
+<img width="3840" height="1958" alt="chimera_Orchestration" src="https://github.com/user-attachments/assets/60fb361c-43e8-4913-afe4-1ca1edf4bdd4" />
+
+
 Chimera3X_Orchestra/
 ├── X_main.py
 ├── Marwantoolkit/
