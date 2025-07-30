@@ -27,6 +27,11 @@ print(response)
 - X3.py : Medical chat assistant (EXAONE-3.5)
 - Chimera_3X_Benchmark.py : Performance evaluation system
 ## Performance Metrics
+
+
+<img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
+
+
 - EM Score : 0.8404
 - F1 Score : 0.8045
 - Clinical Accuracy : 4.02/5
@@ -42,7 +47,7 @@ Chimera3X_Orchestra/
 ├── X_main.py
 ├── Marwantoolkit/
 │   ├── X1.py
-│   ├── X2.py<img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
+│   ├── X2.py
 
 │   └── X3.py
 ├── Chimera_3X_Benchmark.py
