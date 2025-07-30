@@ -21,11 +21,14 @@ It's a comprehensive medical AI system that integrates multiple specialized mode
 
 
 ## Key Features
-- Multi-Model Architecture (BioGPT, BioBERT, DeepSeek-R1, EXAONE-3.5)
-- Medical Text Processing and Analysis
-- Research Integration and Code Generation
-- Safety Protocols and Validation
-- Comprehensive Benchmarking System
+- Multi-model hybrid architecture designed to enhance biomedical question answering
+- Advanced medical text processing and analysis capabilities
+- Seamless integration of external biomedical knowledge graphs for improved accuracy
+- Robust safety protocols and validation mechanisms
+- Comprehensive benchmarking system for performance evaluation
+
+
+
 
   <img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
 
@@ -41,7 +44,7 @@ response = medical_ai.process_query("Your medical question here")
 print(response)
 ## System Components
 - X_main.py : Main medical expert system
-- X1.py : Biomedical text toolkit (BioGPT + BioBERT)
+- X1.py : Biomedical text (BioGPT + BioBERT)
 - X2.py : Research assistant (DeepSeek-R1)
 - X3.py : Medical chat assistant (EXAONE-3.5)
 - Chimera_3X_Benchmark.py : Performance evaluation system
@@ -167,7 +170,7 @@ MIT License
 
 @software{chimera3x2024,
   title = {Chimera-3X: A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting},
-  author = {Marwan},
+  author = {Mr.Marwan},
   year = {2025},
   url = {https://github.com/marwan8086/Chimera-3X}
 }
