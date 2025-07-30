@@ -9,9 +9,9 @@ This scalable and transparent framework significantly improves clinical answer q
 
 <img width="3840" height="426" alt="Full Sys" src="https://github.com/user-attachments/assets/73c86165-3d1d-4a82-aa8d-cb7d1a00f7f7" />
 
-# Chimera-3X: Advanced Medical AI System
+
 ## Overview
-Chimera-3X is a comprehensive medical AI system that combines multiple specialized models for enhanced medical text analysis, research, and consultation capabilities.
+It's a comprehensive medical AI system that integrates multiple specialized models to deliver advanced capabilities in medical text analysis, research, and clinical consultation.
 
 
 
