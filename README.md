@@ -1,10 +1,10 @@
 
 # Chimera-3X : A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting
 
-complexity of clinical knowledge with high accuracy and reliability. It integrates multiple specialized AI components and external biomedical knowledge graphs to enhance factual correctness and reasoning.
+
+Chimera-3X is an advanced biomedical question answering system designed to tackle the complexity of clinical knowledge with high accuracy and reliability. It integrates multiple specialized AI components and external biomedical knowledge graphs to enhance factual correctness and reasoning.
 
 This scalable and transparent framework significantly improves clinical answer quality, offering an effective solution for biomedical consulting and knowledge-driven AI in healthcare.
-
 
 
 <img width="3840" height="426" alt="Full Sys" src="https://github.com/user-attachments/assets/73c86165-3d1d-4a82-aa8d-cb7d1a00f7f7" />
