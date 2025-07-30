@@ -180,3 +180,171 @@ MIT License
 - Developer: [Mr.Marwan]
 - Email: [marwan@mail.dlut.edu.cn]
 - ORCID ID: [0009-0003-9052-6873]
+
+
+
+# ====================================================================
+# Chimera-3X Medical AI System - Complete Requirements Package
+# ====================================================================
+# Advanced Multi-Modal Medical AI System with Local Model Support
+# Repository: https://github.com/marwan8086/Chimera-3X
+# Version: 3.0.0
+# Last Updated: 2025-08-01
+# ====================================================================
+
+# CORE DEEP LEARNING FRAMEWORKS
+# ====================================================================
+torch>=2.0.0                    # PyTorch deep learning framework
+torchvision>=0.15.0             # Computer vision utilities
+torchaudio>=2.0.0               # Audio processing (optional)
+transformers>=4.30.0            # Hugging Face transformers library
+acceleerate>=0.20.0             # Distributed training acceleration
+bitsandbytes>=0.39.0            # 8-bit optimizers and quantization
+
+# SCIENTIFIC COMPUTING & DATA PROCESSING
+# ====================================================================
+numpy>=1.21.0                   # Numerical computing
+scipy>=1.9.0                    # Scientific computing
+scikit-learn>=1.1.0             # Machine learning algorithms
+pandas>=1.5.0                   # Data manipulation and analysis
+
+# NATURAL LANGUAGE PROCESSING
+# ====================================================================
+rank-bm25>=0.2.2                # BM25 ranking algorithm
+regex>=2022.7.9                 # Regular expressions
+langchain>=0.0.200              # LLM application framework
+datasets>=2.10.0                # Dataset loading and processing
+
+# KNOWLEDGE GRAPH & SEMANTIC WEB
+# ====================================================================
+SPARQLWrapper>=2.0.0            # SPARQL query interface
+networkx>=2.8                   # Graph analysis and manipulation
+
+# VECTOR SEARCH & EMBEDDINGS
+# ====================================================================
+faiss-cpu>=1.7.4                # Facebook AI Similarity Search (CPU)
+# faiss-gpu>=1.7.4              # Use this for GPU acceleration
+
+# VISUALIZATION & PLOTTING
+# ====================================================================
+matplotlib>=3.5.0               # Plotting library
+seaborn>=0.11.0                 # Statistical data visualization
+
+# WEB & API INTEGRATION
+# ====================================================================
+requests>=2.28.0                # HTTP library
+openai>=0.27.0                  # OpenAI API client
+
+# UTILITIES & SYSTEM
+# ====================================================================
+tqdm>=4.64.0                    # Progress bars
+logging>=0.4.9.6                # Logging utilities
+datetime>=4.7                   # Date and time handling
+typing-extensions>=4.3.0        # Type hints extensions
+warnings>=0.1.0                 # Warning control
+traceback2>=1.4.0               # Enhanced traceback
+
+# DEVELOPMENT & TESTING (OPTIONAL)
+# ====================================================================
+# pytest>=7.0.0                 # Testing framework
+# pytest-cov>=3.0.0             # Coverage testing
+# black>=22.0.0                 # Code formatter
+# flake8>=5.0.0                 # Code linting
+# jupyter>=1.0.0                # Jupyter notebook support
+
+# ====================================================================
+# INSTALLATION INSTRUCTIONS
+# ====================================================================
+# 
+# 1. Basic Installation:
+#    pip install -r requirements.txt
+# 
+# 2. GPU Support (NVIDIA CUDA):
+#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#    pip install faiss-gpu
+# 
+# 3. Development Installation:
+#    pip install -r requirements.txt
+#    pip install pytest pytest-cov black flake8 jupyter
+# 
+# 4. Verify Installation:
+#    python check_requirements.py
+# 
+# ====================================================================
+# SYSTEM REQUIREMENTS
+# ====================================================================
+# 
+# Minimum Requirements:
+# - Python 3.8+
+# - RAM: 8GB (16GB recommended)
+# - Storage: 10GB free space
+# - Internet connection for model downloads
+# 
+# Recommended for GPU:
+# - NVIDIA GPU with CUDA 11.8+
+# - VRAM: 8GB+ for large models
+# ====================================================================
+# CHIMERA-3X SYSTEM COMPONENTS
+# ====================================================================
+# 
+# Core Modules:
+# - X_main.py: Main medical expert system or the default
+# - Chimera_3X_Benchmark.py: Comprehensive evaluation suite
+# - Marwantoolkit/: Multi-modal AI toolkit (X1, X2, X3)
+# - git_info/: Knowledge graph and retrieval systems
+# - git_wiki_pub/: Publication and wiki integration
+# 
+# Key Features:
+# - Multi-modal medical query processing
+# - Advanced benchmarking (PubMedQA, BioASQ, Clinical Accuracy)
+# - Knowledge graph integration
+# - Safety detection and explainability
+# - Comprehensive visualization dashboard
+# 
+# ====================================================================
+# PERFORMANCE BENCHMARKS
+# ====================================================================
+# 
+# Latest Test Results :
+# - Overall Score: 77.47% (Grade: C)
+# - PubMedQA: 84.04% (Target: 75%) ✓
+# - BioASQ: 78.64% (Target: 70%) ✓
+# - Clinical Accuracy: 80.45% (Target: 75%) ✓
+# - Explainability: 59.15% (Target: 60%) ✗
+# - Safety Detection: 78.12% (Target: 85%) ✗
+# - Targets Achieved: 3/5 benchmarks
+# 
+# ====================================================================
+# TROUBLESHOOTING
+# ====================================================================
+# 
+# Common Issues:
+# 
+# 1. CUDA Out of Memory:
+#    - Reduce batch size in generation_args
+#    - Use CPU mode: device = "cpu"
+#    - Enable gradient checkpointing
+# 
+# 2. Model Download Fails:
+#    - Check internet connection
+#    - Verify Hugging Face access token
+#    - Try manual download: huggingface-cli download
+# 
+# 3. Import Errors:
+#    - Run: pip install --upgrade -r requirements.txt
+#    - Check Python version compatibility
+#    - Verify virtual environment activation
+# 
+# 4. Performance Issues:
+#    - Enable GPU acceleration
+#    - Use quantization (bitsandbytes)
+#    - Optimize generation parameters
+# 
+# ====================================================================
+# CONTACT & SUPPORT
+# ====================================================================
+# 
+# For issues and contributions:
+# - GitHub Issues: https://github.com/Marwan/Chimera-3X/issues
+# - Documentation: https://github.com/Marwan/Chimera-3X/wiki
+# - Email: your-email@domain.com
