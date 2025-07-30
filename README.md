@@ -1,6 +1,12 @@
 
-# Chimera-3X
-A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting
+# Chimera-3X : A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting
+
+complexity of clinical knowledge with high accuracy and reliability. It integrates multiple specialized AI components and external biomedical knowledge graphs to enhance factual correctness and reasoning.
+
+This scalable and transparent framework significantly improves clinical answer quality, offering an effective solution for biomedical consulting and knowledge-driven AI in healthcare.
+
+
+
 <img width="3840" height="426" alt="Full Sys" src="https://github.com/user-attachments/assets/73c86165-3d1d-4a82-aa8d-cb7d1a00f7f7" />
 
 # Chimera-3X: Advanced Medical AI System
@@ -160,7 +166,7 @@ MIT License
 ## Citation
 
 @software{chimera3x2024,
-  title = {Chimera-3X: Advanced Medical AI System},
+  title = {Chimera-3X: A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting},
   author = {Marwan},
   year = {2025},
   url = {https://github.com/marwan8086/Chimera-3X}
