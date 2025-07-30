@@ -3,6 +3,7 @@ A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting
 # Chimera-3X: Advanced Medical AI System
 ## Overview
 Chimera-3X is a comprehensive medical AI system that combines multiple specialized models for enhanced medical text analysis, research, and consultation capabilities.
+<img width="3840" height="1574" alt="chimera_Sys_Orchestration" src="https://github.com/user-attachments/assets/cb8c6ab9-36b3-455c-a958-6c53e1cf1c7b" />
 
 ## Key Features
 - Multi-Model Architecture (BioGPT, BioBERT, DeepSeek-R1, EXAONE-3.5)
@@ -41,7 +42,8 @@ Chimera3X_Orchestra/
 ├── X_main.py
 ├── Marwantoolkit/
 │   ├── X1.py
-│   ├── X2.py
+│   ├── X2.py<img width="2058" height="1158" alt="chimera_metric" src="https://github.com/user-attachments/assets/c2acee80-aadc-438d-8c34-a55ca0735a43" />
+
 │   └── X3.py
 ├── Chimera_3X_Benchmark.py
 ├── figs/
