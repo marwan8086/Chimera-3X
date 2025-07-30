@@ -156,13 +156,16 @@ Medical Disclaimer : This system is for research and educational purposes only. 
 ## License
 MIT License
 
+
 ## Citation
+
 @software{chimera3x2024,
-  title={Chimera-3X: Advanced Medical AI System},
-  author={[Marwan]},
-  year={2025},
-  url={https://github.com/[Marwan]/Chimera-3X}
+  title = {Chimera-3X: Advanced Medical AI System},
+  author = {Marwan},
+  year = {2025},
+  url = {https://github.com/marwan8086/Chimera-3X}
 }
+
 
 ## Contact
 - Developer: [Mr.Marwan]
