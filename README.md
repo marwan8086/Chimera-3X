@@ -5,7 +5,7 @@ A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting
 Chimera-3X is a comprehensive medical AI system that combines multiple specialized models for enhanced medical text analysis, research, and consultation capabilities.
 
 ## Key Features
-- Multi-Model Architecture (GPT-2, BioBERT, DeepSeek-R1, EXAONE-3.5)
+- Multi-Model Architecture (BioGPT, BioBERT, DeepSeek-R1, EXAONE-3.5)
 - Medical Text Processing and Analysis
 - Research Integration and Code Generation
 - Safety Protocols and Validation
@@ -21,7 +21,7 @@ response = medical_ai.process_query("Your medical question here")
 print(response)
 ## System Components
 - X_main.py : Main medical expert system
-- X1.py : Biomedical text toolkit (GPT-2 + BioBERT)
+- X1.py : Biomedical text toolkit (BioGPT + BioBERT)
 - X2.py : Research assistant (DeepSeek-R1)
 - X3.py : Medical chat assistant (EXAONE-3.5)
 - Chimera_3X_Benchmark.py : Performance evaluation system
@@ -29,7 +29,6 @@ print(response)
 - EM Score : 0.8404
 - F1 Score : 0.8045
 - Clinical Accuracy : 4.02/5
-- Explainability : 2.96/5
 - Trustworthiness : 3.9/5
 ## Requirements
 - Python 3.8+
@@ -125,7 +124,7 @@ for package in required_packages:
         print(f"✗ {package} - Missing")
 
 ## Important Notice
-⚠️ Medical Disclaimer : This system is for research and educational purposes only. Not intended for actual medical diagnosis or treatment decisions.
+Medical Disclaimer : This system is for research and educational purposes only. Not intended for actual medical diagnosis or treatment decisions.
 
 ## License
 MIT License
@@ -133,12 +132,12 @@ MIT License
 ## Citation
 @software{chimera3x2024,
   title={Chimera-3X: Advanced Medical AI System},
-  author={[Your Name]},
-  year={2024},
+  author={[Marwan]},
+  year={2025},
   url={https://github.com/[Marwan]/Chimera-3X}
 }
 
 ## Contact
-- Developer: [Your Name]
-- Email: [Your Email]
-- GitHub: [Your GitHub Profile]
+- Developer: [Mr.Marwan]
+- Email: [marwan@mail.dlut.edu.cn]
+- ORCID ID: [0009-0003-9052-6873]
