@@ -1,0 +1,106 @@
+================================================================================
+CHIMERA-3X MEDICAL AI EVALUATION REPORT
+================================================================================
+Evaluation Date: 2025-08-01 14:06:11
+
+++++++++++++++ Sub-case study +++++++++++++++++++
+
+ OVERALL PERFORMANCE
+----------------------------------------
+Total Questions Evaluated: 10
+Correct Answers: 6
+Overall Accuracy: 60.00%
+Average Response Time: 145.59 seconds
+Average Confidence Score: 0.60
+
+ CATEGORY-WISE PERFORMANCE
+----------------------------------------
+Oncology: 100.00% (1/1)
+Endocrinology: 100.00% (1/1)
+Anatomy: 50.00% (1/2)
+Genetics: 0.00% (0/1)
+Pediatrics: 100.00% (1/1)
+Cardiology: 100.00% (1/1)
+Immunology: 0.00% (0/1)
+Neuroscience: 0.00% (0/1)
+Gastroenterology: 100.00% (1/1)
+
+DIFFICULTY-WISE PERFORMANCE
+----------------------------------------
+Hard: 100.00% (1/1)
+Easy: 50.00% (1/2)
+Medium: 57.14% (4/7)
+
+ DETAILED QUESTION RESULTS
+----------------------------------------
+PMQ_001:  CORRECT
+   Question: Do probiotics reduce the risk of necrotizing enterocolitis in preterm infants?...
+   Model Answer: A
+   Correct Answer: A
+   Confidence: 1.00
+   Category: pediatrics | Difficulty: medium
+
+PMQ_002:  INCORRECT
+   Question: Is vitamin D deficiency associated with increased risk of COVID-19?...
+   Model Answer: C
+   Correct Answer: A
+   Confidence: 0.00
+   Category: immunology | Difficulty: medium
+
+PMQ_003:  CORRECT
+   Question: Does aspirin reduce the risk of colorectal cancer?...
+   Model Answer: A
+   Correct Answer: A
+   Confidence: 1.00
+   Category: oncology | Difficulty: medium
+
+MQA_001:  CORRECT
+   Question: A 45-year-old man presents with chest pain and shortness of breath. ECG shows ST-elevation in leads ...
+   Model Answer: B
+   Correct Answer: B
+   Confidence: 1.00
+   Category: cardiology | Difficulty: hard
+
+MQA_002:  CORRECT
+   Question: Which of the following is the most common cause of acute pancreatitis in developed countries?...
+   Model Answer: B
+   Correct Answer: B
+   Confidence: 1.00
+   Category: gastroenterology | Difficulty: medium
+
+MQA_003:  CORRECT
+   Question: A 30-year-old woman presents with fatigue, weight gain, and cold intolerance. TSH is elevated and T4...
+   Model Answer: B
+   Correct Answer: B
+   Confidence: 1.00
+   Category: endocrinology | Difficulty: medium
+
+BAQ_001:  INCORRECT
+   Question: What is the function of the BRCA1 gene?...
+   Model Answer: **A
+   Correct Answer: DNA repair and tumor suppression
+   Confidence: 0.00
+   Category: genetics | Difficulty: medium
+
+BAQ_002:  INCORRECT
+   Question: Which brain region is primarily responsible for regulating sleep-wake cycles?...
+   Model Answer: **B
+   Correct Answer: Suprachiasmatic nucleus
+   Confidence: 0.00
+   Category: neuroscience | Difficulty: medium
+
+ANT_001:  INCORRECT
+   Question: How many inches does hair typically grow per year?...
+   Model Answer: C
+   Correct Answer: B
+   Confidence: 0.00
+   Category: anatomy | Difficulty: easy
+
+ANT_002:  CORRECT
+   Question: Where is the thinnest skin on the human body located?...
+   Model Answer: C
+   Correct Answer: C
+   Confidence: 1.00
+   Category: anatomy | Difficulty: easy
+
+================================================================================
