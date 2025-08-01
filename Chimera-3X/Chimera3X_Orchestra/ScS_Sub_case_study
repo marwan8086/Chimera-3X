@@ -1,0 +1,693 @@
+# -*- coding: utf-8 -*-
+"""
+Chimera-3X Medical AI Evaluation System
+Complete evaluation framework for medical AI models based on international benchmarks
+Created by Marwan for Research - Marwantoolkit
+
+This system evaluates the MediExpert (Chimera-3X) model against standard medical benchmarks:
+- PubMedQA: Biomedical question answering
+- BioASQ: Biomedical semantic indexing and question answering
+- MedQA: Medical question answering (USMLE-style)
+- Clinical reasoning tasks
+- Medical knowledge assessment
+"""
+
+import os
+import sys
+import json
+import torch
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime
+from typing import List, Dict, Union, Optional, Tuple
+from dataclasses import dataclass
+import re
+import hashlib
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import warnings
+warnings.filterwarnings('ignore')
+
+# Import the original MediExpert class
+class MediExpert:
+    def __init__(self, model_path="LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct"):
+        os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
+        os.environ['TRUST_REMOTE_CODE'] = 'true'
+
+        self.model_path = model_path
+        self.device = self._get_device()
+        self._ensure_dependencies()
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+        self.model = self._load_model()
+
+        self.history = []
+        self.prompt = self._build_system_prompt()
+        self.generation_args = {
+            "max_new_tokens": 800,
+            "temperature": 0.7,
+            "top_p": 0.9,
+            "repetition_penalty": 1.2,
+            "no_repeat_ngram_size": 3,
+            "do_sample": True,
+            "pad_token_id": None
+        }
+
+        if self.tokenizer.pad_token_id is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.generation_args["pad_token_id"] = self.tokenizer.pad_token_id
+
+    def _get_device(self):
+        if torch.cuda.is_available():
+            device_name = torch.cuda.get_device_name(0)
+            print(f"Using GPU: {device_name}")
+            return "cuda"
+        print("Using CPU")
+        return "cpu"
+
+    def _ensure_dependencies(self):
+        try:
+            import accelerate
+            import bitsandbytes
+        except ImportError:
+            print("Installing required dependencies...")
+            import subprocess
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "accelerate", "bitsandbytes"])
+
+    def _load_model(self):
+        try:
+            model = AutoModelForCausalLM.from_pretrained(
+                self.model_path,
+                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                device_map="auto" if self.device == "cuda" else None,
+                trust_remote_code=True,
+                low_cpu_mem_usage=True
+            )
+
+            if self.device == "cpu":
+                model = model.to(self.device)
+
+            return model
+
+        except Exception as e:
+            print(f"Failed to load model: {e}")
+            raise
+
+    def _build_system_prompt(self):
+        return (
+            "You are MediExpert-5.0 (Chimera-3X), an advanced medical AI assistant. "
+            "Provide accurate, evidence-based medical information. "
+            "For multiple choice questions, provide the letter of the correct answer followed by a brief explanation."
+        )
+
+    def consult(self, query: str) -> Dict:
+        """Simplified consult method for evaluation"""
+        try:
+            messages = [
+                {"role": "system", "content": self._build_system_prompt()},
+                {"role": "user", "content": query}
+            ]
+
+            inputs = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=True,
+                add_generation_prompt=True,
+                return_tensors="pt"
+            ).to(self.device)
+
+            with torch.no_grad():
+                outputs = self.model.generate(
+                    inputs,
+                    **self.generation_args,
+                    eos_token_id=self.tokenizer.eos_token_id
+                )
+
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+            if "[|assistant|]" in response:
+                response = response.split("[|assistant|]")[-1].strip()
+            elif "assistant" in response.lower():
+                parts = response.lower().split("assistant")
+                if len(parts) > 1:
+                    response = response[response.lower().rfind("assistant") + 9:].strip()
+
+            return {
+                "response": response,
+                "timestamp": datetime.now().isoformat()
+            }
+
+        except Exception as e:
+            print(f"Error in consult: {e}")
+            return {
+                "response": "Error generating response",
+                "timestamp": datetime.now().isoformat()
+            }
+
+@dataclass
+class EvaluationQuestion:
+    """Structure for evaluation questions"""
+    question_id: str
+    question_text: str
+    options: Optional[Dict[str, str]]  # For multiple choice: {"A": "option1", "B": "option2", ...}
+    correct_answer: str
+    question_type: str  # "multiple_choice", "yes_no", "short_answer"
+    category: str  # "anatomy", "physiology", "pathology", "pharmacology", etc.
+    difficulty: str  # "easy", "medium", "hard"
+    source: str  # "PubMedQA", "BioASQ", "MedQA", "Custom"
+
+@dataclass
+class EvaluationResult:
+    """Structure for evaluation results"""
+    question_id: str
+    question_text: str
+    model_answer: str
+    correct_answer: str
+    is_correct: bool
+    confidence_score: float
+    response_time: float
+    category: str
+    difficulty: str
+
+class MedicalEvaluationDataset:
+    """Medical evaluation dataset with various benchmark questions"""
+
+    def __init__(self):
+        self.questions = []
+        self._load_standard_questions()
+
+    def _load_standard_questions(self):
+        """Load standard medical evaluation questions"""
+
+        # PubMedQA-style questions
+        pubmed_questions = [
+            EvaluationQuestion(
+                question_id="PMQ_001",
+                question_text="Do probiotics reduce the risk of necrotizing enterocolitis in preterm infants?",
+                options={"A": "Yes", "B": "No", "C": "Uncertain"},
+                correct_answer="A",
+                question_type="multiple_choice",
+                category="pediatrics",
+                difficulty="medium",
+                source="PubMedQA"
+            ),
+            EvaluationQuestion(
+                question_id="PMQ_002",
+                question_text="Is vitamin D deficiency associated with increased risk of COVID-19?",
+                options={"A": "Yes", "B": "No", "C": "Uncertain"},
+                correct_answer="A",
+                question_type="multiple_choice",
+                category="immunology",
+                difficulty="medium",
+                source="PubMedQA"
+            ),
+            EvaluationQuestion(
+                question_id="PMQ_003",
+                question_text="Does aspirin reduce the risk of colorectal cancer?",
+                options={"A": "Yes", "B": "No", "C": "Uncertain"},
+                correct_answer="A",
+                question_type="multiple_choice",
+                category="oncology",
+                difficulty="medium",
+                source="PubMedQA"
+            )
+        ]
+
+        # MedQA-style questions (USMLE format)
+        medqa_questions = [
+            EvaluationQuestion(
+                question_id="MQA_001",
+                question_text="A 45-year-old man presents with chest pain and shortness of breath. ECG shows ST-elevation in leads V1-V4. What is the most likely diagnosis?",
+                options={
+                    "A": "Unstable angina",
+                    "B": "Anterior STEMI",
+                    "C": "Pulmonary embolism",
+                    "D": "Aortic dissection"
+                },
+                correct_answer="B",
+                question_type="multiple_choice",
+                category="cardiology",
+                difficulty="hard",
+                source="MedQA"
+            ),
+            EvaluationQuestion(
+                question_id="MQA_002",
+                question_text="Which of the following is the most common cause of acute pancreatitis in developed countries?",
+                options={
+                    "A": "Alcohol abuse",
+                    "B": "Gallstones",
+                    "C": "Hypertriglyceridemia",
+                    "D": "Medications"
+                },
+                correct_answer="B",
+                question_type="multiple_choice",
+                category="gastroenterology",
+                difficulty="medium",
+                source="MedQA"
+            ),
+            EvaluationQuestion(
+                question_id="MQA_003",
+                question_text="A 30-year-old woman presents with fatigue, weight gain, and cold intolerance. TSH is elevated and T4 is low. What is the most likely diagnosis?",
+                options={
+                    "A": "Hyperthyroidism",
+                    "B": "Primary hypothyroidism",
+                    "C": "Secondary hypothyroidism",
+                    "D": "Euthyroid sick syndrome"
+                },
+                correct_answer="B",
+                question_type="multiple_choice",
+                category="endocrinology",
+                difficulty="medium",
+                source="MedQA"
+            )
+        ]
+
+        # BioASQ-style questions
+        bioasq_questions = [
+            EvaluationQuestion(
+                question_id="BAQ_001",
+                question_text="What is the function of the BRCA1 gene?",
+                options=None,
+                correct_answer="DNA repair and tumor suppression",
+                question_type="short_answer",
+                category="genetics",
+                difficulty="medium",
+                source="BioASQ"
+            ),
+            EvaluationQuestion(
+                question_id="BAQ_002",
+                question_text="Which brain region is primarily responsible for regulating sleep-wake cycles?",
+                options=None,
+                correct_answer="Suprachiasmatic nucleus",
+                question_type="short_answer",
+                category="neuroscience",
+                difficulty="medium",
+                source="BioASQ"
+            )
+        ]
+
+        # Anatomy questions
+        anatomy_questions = [
+            EvaluationQuestion(
+                question_id="ANT_001",
+                question_text="How many inches does hair typically grow per year?",
+                options={"A": "4 inches", "B": "6 inches", "C": "8 inches", "D": "12 inches"},
+                correct_answer="B",
+                question_type="multiple_choice",
+                category="anatomy",
+                difficulty="easy",
+                source="Custom"
+            ),
+            EvaluationQuestion(
+                question_id="ANT_002",
+                question_text="Where is the thinnest skin on the human body located?",
+                options={
+                    "A": "Palms of hands",
+                    "B": "Soles of feet",
+                    "C": "Eyelids",
+                    "D": "Back of neck"
+                },
+                correct_answer="C",
+                question_type="multiple_choice",
+                category="anatomy",
+                difficulty="easy",
+                source="Custom"
+            )
+        ]
+
+        # Combine all questions
+        self.questions.extend(pubmed_questions)
+        self.questions.extend(medqa_questions)
+        self.questions.extend(bioasq_questions)
+        self.questions.extend(anatomy_questions)
+
+    def get_questions_by_category(self, category: str) -> List[EvaluationQuestion]:
+        """Get questions filtered by category"""
+        return [q for q in self.questions if q.category == category]
+
+    def get_questions_by_difficulty(self, difficulty: str) -> List[EvaluationQuestion]:
+        """Get questions filtered by difficulty"""
+        return [q for q in self.questions if q.difficulty == difficulty]
+
+    def get_questions_by_source(self, source: str) -> List[EvaluationQuestion]:
+        """Get questions filtered by source"""
+        return [q for q in self.questions if q.source == source]
+
+    def add_question(self, question: EvaluationQuestion):
+        """Add a new question to the dataset"""
+        self.questions.append(question)
+
+    def get_all_questions(self) -> List[EvaluationQuestion]:
+        """Get all questions"""
+        return self.questions
+
+class ChimeraEvaluator:
+    """Main evaluation class for Chimera-3X model"""
+
+    def __init__(self, model_path: str = "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct"):
+        print(" Initializing Chimera-3X Evaluation System...")
+        print("=" * 60)
+
+        self.model = MediExpert(model_path)
+        self.dataset = MedicalEvaluationDataset()
+        self.results = []
+
+        print(f" Model loaded: {model_path}")
+        print(f" Loaded {len(self.dataset.get_all_questions())} evaluation questions")
+        print("=" * 60)
+
+    def _extract_answer_from_response(self, response: str, question: EvaluationQuestion) -> str:
+        """Extract the model's answer from its response"""
+        response = response.strip().upper()
+
+        if question.question_type == "multiple_choice":
+            # Look for pattern like "A)", "B.", "A:", etc.
+            pattern = r'\b([A-D])[.):\s]'
+            match = re.search(pattern, response)
+            if match:
+                return match.group(1)
+
+            # Look for standalone letters at the beginning
+            if response.startswith(('A', 'B', 'C', 'D')):
+                return response[0]
+
+            # Look for "The answer is X" pattern
+            answer_pattern = r'(?:ANSWER|CORRECT|CHOICE)\s+IS\s+([A-D])'
+            match = re.search(answer_pattern, response)
+            if match:
+                return match.group(1)
+
+        elif question.question_type == "yes_no":
+            if "YES" in response:
+                return "YES"
+            elif "NO" in response:
+                return "NO"
+
+        elif question.question_type == "short_answer":
+            # Return the first sentence as the answer
+            sentences = response.split('.')
+            return sentences[0].strip() if sentences else response
+
+        return response[:100]  # Return first 100 chars if no clear answer found
+
+    def _calculate_accuracy(self, model_answer: str, correct_answer: str, question_type: str) -> Tuple[bool, float]:
+        """Calculate if the answer is correct and confidence score"""
+
+        if question_type == "multiple_choice" or question_type == "yes_no":
+            is_correct = model_answer.upper() == correct_answer.upper()
+            confidence = 1.0 if is_correct else 0.0
+
+        elif question_type == "short_answer":
+            # For short answers, use fuzzy matching
+            model_lower = model_answer.lower()
+            correct_lower = correct_answer.lower()
+
+            # Check if key terms from correct answer are in model answer
+            correct_terms = set(correct_lower.split())
+            model_terms = set(model_lower.split())
+
+            overlap = len(correct_terms.intersection(model_terms))
+            total_correct_terms = len(correct_terms)
+
+            confidence = overlap / total_correct_terms if total_correct_terms > 0 else 0.0
+            is_correct = confidence >= 0.5  # 50% term overlap threshold
+
+        else:
+            is_correct = False
+            confidence = 0.0
+
+        return is_correct, confidence
+
+    def evaluate_single_question(self, question: EvaluationQuestion) -> EvaluationResult:
+        """Evaluate the model on a single question"""
+
+        # Format the question for the model
+        if question.options:
+            options_text = "\n".join([f"{k}. {v}" for k, v in question.options.items()])
+            formatted_question = f"{question.question_text}\n\nOptions:\n{options_text}\n\nAnswer:"
+        else:
+            formatted_question = f"{question.question_text}\n\nAnswer:"
+
+        # Get model response
+        start_time = datetime.now()
+        response_data = self.model.consult(formatted_question)
+        end_time = datetime.now()
+
+        response_time = (end_time - start_time).total_seconds()
+        model_response = response_data.get("response", "")
+
+        # Extract answer
+        model_answer = self._extract_answer_from_response(model_response, question)
+
+        # Calculate accuracy
+        is_correct, confidence = self._calculate_accuracy(
+            model_answer, question.correct_answer, question.question_type
+        )
+
+        # Create result
+        result = EvaluationResult(
+            question_id=question.question_id,
+            question_text=question.question_text,
+            model_answer=model_answer,
+            correct_answer=question.correct_answer,
+            is_correct=is_correct,
+            confidence_score=confidence,
+            response_time=response_time,
+            category=question.category,
+            difficulty=question.difficulty
+        )
+
+        return result
+
+    def run_full_evaluation(self) -> Dict:
+        """Run complete evaluation on all questions"""
+
+        print(" Starting Full Medical AI Evaluation...")
+        print("=" * 60)
+
+        questions = self.dataset.get_all_questions()
+        total_questions = len(questions)
+
+        self.results = []
+
+        for i, question in enumerate(questions, 1):
+            print(f" Evaluating Question {i}/{total_questions} ({question.question_id})")
+            print(f"   Category: {question.category} | Difficulty: {question.difficulty}")
+
+            try:
+                result = self.evaluate_single_question(question)
+                self.results.append(result)
+
+                status = " CORRECT" if result.is_correct else " INCORRECT"
+                print(f"   {status} | Confidence: {result.confidence_score:.2f}")
+
+            except Exception as e:
+                print(f"     Error: {str(e)}")
+                continue
+
+            print("-" * 40)
+
+        # Calculate overall metrics
+        evaluation_metrics = self._calculate_evaluation_metrics()
+
+        print("\n EVALUATION COMPLETED!")
+        print("=" * 60)
+        print(f" Overall Accuracy: {evaluation_metrics['overall_accuracy']:.2%}")
+        print(f"  Average Response Time: {evaluation_metrics['avg_response_time']:.2f}s")
+        print(f"Total Questions: {evaluation_metrics['total_questions']}")
+        print(f" Correct Answers: {evaluation_metrics['correct_answers']}")
+        print("=" * 60)
+
+        return evaluation_metrics
+
+    def _calculate_evaluation_metrics(self) -> Dict:
+        """Calculate comprehensive evaluation metrics"""
+
+        if not self.results:
+            return {}
+
+        # Overall metrics
+        total_questions = len(self.results)
+        correct_answers = sum(1 for r in self.results if r.is_correct)
+        overall_accuracy = correct_answers / total_questions
+        avg_response_time = np.mean([r.response_time for r in self.results])
+        avg_confidence = np.mean([r.confidence_score for r in self.results])
+
+        # Category-wise metrics
+        categories = set(r.category for r in self.results)
+        category_metrics = {}
+
+        for category in categories:
+            cat_results = [r for r in self.results if r.category == category]
+            cat_correct = sum(1 for r in cat_results if r.is_correct)
+            cat_total = len(cat_results)
+            cat_accuracy = cat_correct / cat_total if cat_total > 0 else 0
+
+            category_metrics[category] = {
+                'accuracy': cat_accuracy,
+                'correct': cat_correct,
+                'total': cat_total
+            }
+
+        # Difficulty-wise metrics
+        difficulties = set(r.difficulty for r in self.results)
+        difficulty_metrics = {}
+
+        for difficulty in difficulties:
+            diff_results = [r for r in self.results if r.difficulty == difficulty]
+            diff_correct = sum(1 for r in diff_results if r.is_correct)
+            diff_total = len(diff_results)
+            diff_accuracy = diff_correct / diff_total if diff_total > 0 else 0
+
+            difficulty_metrics[difficulty] = {
+                'accuracy': diff_accuracy,
+                'correct': diff_correct,
+                'total': diff_total
+            }
+
+        return {
+            'overall_accuracy': overall_accuracy,
+            'correct_answers': correct_answers,
+            'total_questions': total_questions,
+            'avg_response_time': avg_response_time,
+            'avg_confidence': avg_confidence,
+            'category_metrics': category_metrics,
+            'difficulty_metrics': difficulty_metrics,
+            'evaluation_timestamp': datetime.now().isoformat()
+        }
+
+    def generate_detailed_report(self) -> str:
+        """Generate a detailed evaluation report"""
+
+        if not self.results:
+            return "No evaluation results available. Run evaluation first."
+
+        metrics = self._calculate_evaluation_metrics()
+
+        report = []
+        report.append("=" * 80)
+        report.append("CHIMERA-3X MEDICAL AI EVALUATION REPORT")
+        report.append("=" * 80)
+        report.append(f"Evaluation Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        report.append(f"Model: {self.model.model_path}")
+        report.append("")
+
+        # Overall Performance
+        report.append(" OVERALL PERFORMANCE")
+        report.append("-" * 40)
+        report.append(f"Total Questions Evaluated: {metrics['total_questions']}")
+        report.append(f"Correct Answers: {metrics['correct_answers']}")
+        report.append(f"Overall Accuracy: {metrics['overall_accuracy']:.2%}")
+        report.append(f"Average Response Time: {metrics['avg_response_time']:.2f} seconds")
+        report.append(f"Average Confidence Score: {metrics['avg_confidence']:.2f}")
+        report.append("")
+
+        # Category Performance
+        report.append(" CATEGORY-WISE PERFORMANCE")
+        report.append("-" * 40)
+        for category, cat_metrics in metrics['category_metrics'].items():
+            report.append(f"{category.title()}: {cat_metrics['accuracy']:.2%} "
+                         f"({cat_metrics['correct']}/{cat_metrics['total']})")
+        report.append("")
+
+        # Difficulty Performance
+        report.append("⚡ DIFFICULTY-WISE PERFORMANCE")
+        report.append("-" * 40)
+        for difficulty, diff_metrics in metrics['difficulty_metrics'].items():
+            report.append(f"{difficulty.title()}: {diff_metrics['accuracy']:.2%} "
+                         f"({diff_metrics['correct']}/{diff_metrics['total']})")
+        report.append("")
+
+        # Detailed Results
+        report.append(" DETAILED QUESTION RESULTS")
+        report.append("-" * 40)
+
+        for result in self.results:
+            status = " CORRECT" if result.is_correct else " INCORRECT"
+            report.append(f"{result.question_id}: {status}")
+            report.append(f"   Question: {result.question_text[:100]}...")
+            report.append(f"   Model Answer: {result.model_answer}")
+            report.append(f"   Correct Answer: {result.correct_answer}")
+            report.append(f"   Confidence: {result.confidence_score:.2f}")
+            report.append(f"   Category: {result.category} | Difficulty: {result.difficulty}")
+            report.append("")
+
+        report.append("=" * 80)
+
+        return "\n".join(report)
+
+    def save_results(self, filename: Optional[str] = None):
+        """Save evaluation results to files"""
+
+        if not filename:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"chimera_evaluation_{timestamp}"
+
+        # Save detailed report
+        report = self.generate_detailed_report()
+        with open(f"{filename}_report.txt", 'w', encoding='utf-8') as f:
+            f.write(report)
+
+        # Save results as JSON
+        results_data = {
+            'metrics': self._calculate_evaluation_metrics(),
+            'results': [
+                {
+                    'question_id': r.question_id,
+                    'question_text': r.question_text,
+                    'model_answer': r.model_answer,
+                    'correct_answer': r.correct_answer,
+                    'is_correct': r.is_correct,
+                    'confidence_score': r.confidence_score,
+                    'response_time': r.response_time,
+                    'category': r.category,
+                    'difficulty': r.difficulty
+                }
+                for r in self.results
+            ]
+        }
+
+        with open(f"{filename}_results.json", 'w', encoding='utf-8') as f:
+            json.dump(results_data, f, indent=2, ensure_ascii=False)
+
+        print(f" Results saved:")
+        print(f"    Report: {filename}_report.txt")
+        print(f"    Data: {filename}_results.json")
+
+
+def main():
+    """Main function to run the evaluation"""
+
+    print("\n CHIMERA-3X MEDICAL AI EVALUATION SYSTEM")
+    print("Created by Marwan for Research - Marwantoolkit")
+    print("=" * 60)
+
+    try:
+        # Initialize evaluator
+        evaluator = ChimeraEvaluator()
+
+        # Run evaluation
+        metrics = evaluator.run_full_evaluation()
+
+        # Generate and display report
+        print("\n GENERATING DETAILED REPORT...")
+        report = evaluator.generate_detailed_report()
+        print(report)
+
+        # Save results
+        evaluator.save_results()
+
+        print("\n EVALUATION COMPLETED SUCCESSFULLY!")
+        print("Check the generated files for detailed results.")
+
+    except KeyboardInterrupt:
+        print("\n  Evaluation interrupted by user.")
+    except Exception as e:
+        print(f"\n Error during evaluation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
