@@ -172,7 +172,7 @@ MIT License
   title = {Chimera-3X: A Hybrid Cognitive Engine for Retrieval-Augmented Biomedical Consulting},
   author = {Mr.Marwan},
   year = {2025},
-  url = {https://ieeexplore.ieee.org/document/11356117}
+  url = { https://ieeexplore.ieee.org/document/11356117 }
   
 }
 
