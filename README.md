@@ -52,13 +52,11 @@ print(response)
 - X3.py : Medical chat assistant (EXAONE-3.5)
 - Chimera_3X_Benchmark.py : Performance evaluation system
 ## Performance Metrics
-<div style="display: flex; gap: 10px; align-items: flex-start;">
-  <img width="370" height="254" alt="chimera3x_performance_vs_target_radar"
-       src="https://github.com/user-attachments/assets/4708df72-fb9b-4ea2-ac77-17d8ac31aca7" />
+<img style="display:inline-block; vertical-align:top;" width="370" height="254"
+     src="https://github.com/user-attachments/assets/4708df72-fb9b-4ea2-ac77-17d8ac31aca7" />
 
-  <img width="285" height="214" alt="chimera3x_benchmark_scores_comparison"
-       src="https://github.com/user-attachments/assets/c3bac357-0757-49fd-81e4-1eeb07bf4bd6" />
-</div>
+<img style="display:inline-block; vertical-align:top;" width="285" height="214"
+     src="https://github.com/user-attachments/assets/c3bac357-0757-49fd-81e4-1eeb07bf4bd6" />
 
 
 
