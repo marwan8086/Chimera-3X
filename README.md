@@ -4,7 +4,8 @@
 
 Chimera-3X is an advanced biomedical question answering system designed to tackle the complexity of clinical knowledge with high accuracy and reliability. It integrates multiple specialized AI components and external biomedical knowledge graphs to enhance factual correctness and reasoning.
 
-<img width="2535" height="1320" alt="image" src="https://github.com/user-attachments/assets/17281228-e85d-4e8e-bbdc-f8c13bd596ea" />
+<img width="1666" height="813" alt="image" src="https://github.com/user-attachments/assets/2a589c65-68d0-44ae-b7fc-23294135fe2a" />
+
 
 
 This scalable and transparent framework significantly improves clinical answer quality, offering an effective solution for biomedical consulting and knowledge-driven AI in healthcare.
